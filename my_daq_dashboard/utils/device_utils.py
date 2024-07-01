@@ -1,4 +1,5 @@
 # device_utils.py
+
 from mcculw import ul
 from mcculw.enums import InterfaceType, InfoType, AiChanType, BoardInfo, AnalogInputMode
 
@@ -12,8 +13,8 @@ def initialize_device(board_num):
     else:
         raise Exception("No DAQ devices found")
 
-def set_channel_settings(board_num):
-    channel = 0
-    ul.set_config(InfoType.BOARDINFO, board_num, channel, BoardInfo.ADCHANTYPE, AiChanType.VOLTAGE)
-    ul.a_chan_input_mode(board_num, channel, AnalogInputMode.DIFFERENTIAL)
-    ul.set_config(InfoType.BOARDINFO, board_num, channel, BoardInfo.ADDATARATE, 1000)
+def set_channel_settings(board_num, channels):
+    for channel in channels:
+        ul.set_config(InfoType.BOARDINFO, board_num, channel, BoardInfo.ADCHANTYPE, AiChanType.VOLTAGE)
+        ul.a_chan_input_mode(board_num, channel, AnalogInputMode.DIFFERENTIAL)
+        ul.set_config(InfoType.BOARDINFO, board_num, channel, BoardInfo.ADDATARATE, 1000)

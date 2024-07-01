@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter import Menu, messagebox, ttk, filedialog, PhotoImage
 from mcculw import ul
 from mcculw.enums import InterfaceType, DigitalPortType, InfoType, BoardInfo
@@ -9,6 +10,8 @@ from dashboard.widgets.analog_in_display import AnalogInDisplay
 from dashboard.widgets.ContinuousDataRecorder import ContinuousDataRecorder
 import os
 import json
+from scan_to_file import ScanToFile
+from utils.device_utils import initialize_device, set_channel_settings
 
 class DashboardApp:
     def __init__(self, root):
@@ -18,6 +21,19 @@ class DashboardApp:
         self.board_num = 0
         self.serial_number = "Unknown"
         self.logo_image = PhotoImage(file="C:/Users/mbhardwaj/OneDrive - Inogen/Documents/Measurement Computing/MC-USB-2416/USB-2416-DAQdash/my_daq_dashboard/ino.png")
+
+        # Create a frame for the buttons
+        self.button_frame = ttk.Frame(self.root)
+        self.button_frame.pack(side=tk.TOP, fill=tk.X)
+
+# Add a button to start the scan with live data display
+        self.scan_button = ttk.Button(self.button_frame, text="Start Scan", command=self.start_scan)
+        self.scan_button.pack(side=tk.LEFT)
+
+ # Initialize device
+        self.device = initialize_device(self.board_num)
+        self.channels = [0, 1, 2, 3]  # Example channel list, update as needed
+        set_channel_settings(self.board_num, self.channels)
 
         # Set the icon
         self.set_icon("C:/Users/mbhardwaj/OneDrive - Inogen/Documents/Measurement Computing/MC-USB-2416/USB-2416-DAQdash/my_daq_dashboard/icon.png")
@@ -39,6 +55,10 @@ class DashboardApp:
 
         # Handle window close event
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def start_scan(self):
+        scanner = ScanToFile(board_num=self.board_num, rate=1000, file_name='output.csv')
+        scanner.root.mainloop()
 
     def load_azure_theme(self):
         # Path to the azure.tcl file
